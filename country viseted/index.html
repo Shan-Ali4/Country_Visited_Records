@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./index.css">
+    <title>Home Page</title>
+    <style>
+      /* All Your css here  */
+    </style>
+  </head>
+  <body>
+    <div class="nav">
+      <h1>All Country Records 195</h1>
+      <a href="./index.html">Home</a>
+      <a href="./visited.html">Visited</a>
+    </div>
+    <select id="sort">
+      <option value="">Sort By Population</option>
+      <option value="asc">Ascending</option>
+      <option value="desc">Descending</option>
+    </select>
+    <form>
+      <input type="text" placeholder="Search" id="search" />
+      <input type="submit" value="Search" />
+    </form>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Country</th>
+          <th>Rank</th>
+          <th>Population</th>
+          <th>Visited</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Here all rows will be appended  -->
+      </tbody>
+    </table>
+  </body>
+  <script>
+    // Write all JS here
+    let arr2 = JSON.parse(localStorage.getItem("visited"));
+    if (arr2 === null) {
+      arr2 = [];
+    }
+    const url = `https://dbioz2ek0e.execute-api.ap-south-1.amazonaws.com/mockapi/get-countries`;
+    let tbody = document.querySelector("tbody");
+    let arr = [];
+    movieName();
+    async function movieName() {
+      try {
+        let request = await fetch(url);
+        let data = await request.json();
+        console.log(data);
+        arr = data.data;
+        console.log(arr);
+        display(arr);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    function display(data) {
+      tbody.innerHTML = null;
+      data.forEach((element, index) => {
+        let tr = document.createElement("tr");
+        let td1 = document.createElement("td");
+        td1.innerText = element.id;
+        let td2 = document.createElement("td");
+        td2.innerText = element.country;
+        let td3 = document.createElement("td");
+        td3.innerText = element.Rank;
+        let td4 = document.createElement("td");
+        td4.innerText = element.population;
+        let td5 = document.createElement("button");
+        td5.innerText = "Visit";
+        td5.addEventListener("click", () => {
+          arr2.push(arr[index]);
+          localStorage.setItem("visited", JSON.stringify(arr2));
+        });
+        tr.append(td1, td2, td3, td4, td5);
+        tbody.append(tr);
+      });
+    }
+    let formInp = document.querySelector("form");
+
+    formInp.addEventListener("submit", (e) => {
+      e.preventDefault();
+      let input = document.getElementById("search").value;
+      let filtered = arr.filter((ele) => {
+        if (ele.country.toUpperCase().includes(input.toUpperCase()) === true) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+      display(filtered);
+    });
+    let select = document.getElementById("sort");
+    select.addEventListener("change", () => {
+      if (select.value == "") {
+        display(arr);
+      } else if (select.value == "asc") {
+        fetch(
+          "https://dbioz2ek0e.execute-api.ap-south-1.amazonaws.com/mockapi/get-countries?sort=population&&order=asc"
+        )
+          .then((req) => {
+            return req.json();
+          })
+          .then((data) => {
+            console.log(data.data);
+            display(data.data);
+          });
+      } else if (select.value == "desc") {
+        fetch(
+          "https://dbioz2ek0e.execute-api.ap-south-1.amazonaws.com/mockapi/get-countries?sort=population&&order=desc"
+        )
+          .then((req) => {
+            return req.json();
+          })
+          .then((data) => {
+            console.log(data.data);
+            display(data.data);
+          });
+      }
+    });
+  </script>
+</html>

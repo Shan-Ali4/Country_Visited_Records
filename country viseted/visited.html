@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="./all.css">
+    <title>Visited Page</title>
+    <style>
+      /* All Your css here  */
+    </style>
+  </head>
+  <body>
+    <div class="nav">
+      <h1>Masai Country Records</h1>
+      <a href="./index.html">Home</a>
+      <a href="./visited.html">Visited</a>
+    </div>
+    <h1 id="total">
+      You have visited total <span id="visited-total">0</span> countries.
+    </h1>
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Country</th>
+          <th>Rank</th>
+          <th>Population</th>
+          <th>Remove</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Here all rows will be appended  -->
+      </tbody>
+    </table>
+  </body>
+  <script>
+    // Write All JS Here
+  let arr = JSON.parse(localStorage.getItem("visited"));
+  if (arr === null) {
+    arr = [];
+  }
+  let tbody = document.querySelector("tbody");
+  let totalSpan = document.querySelector("#visited-total");
+  display(arr);
+  countVisited(arr);
+
+  function display(data) {
+    tbody.innerHTML = null;
+    data.forEach((element, index) => {
+      let tr = document.createElement("tr");
+      let td1 = document.createElement("td");
+      let td2 = document.createElement("td");
+      let td3 = document.createElement("td");
+      let td4 = document.createElement("td");
+
+      let td6 = document.createElement("button");
+      td1.innerText = element.id;
+      td2.innerText = element.country;
+      td3.innerText = element.Rank;
+      td4.innerText = element.population;
+
+      td6.innerText = "Remove";
+      td6.addEventListener("click", () => {
+        arr = arr.filter((ele, i) => {
+          if (index === i) {
+            return false;
+          } else {
+            return true;
+          }
+        });
+        display(arr);
+        countVisited(arr);
+        localStorage.setItem("visited", JSON.stringify(arr));
+      });
+      tr.append(td1, td2, td3, td4, td6);
+      tbody.append(tr);
+    });
+  }
+
+  function countVisited(data) {
+    totalSpan.innerText = data.length;
+  }
+  </script>
+</html>
